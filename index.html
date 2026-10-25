@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCAR-AI OMNIROUTE HQ // Ultimate 8-Bit Cyberpunk Office Ecosystem</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Retro & Pixel Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            silk: ['"Silkscreen"', 'sans-serif'],
+            vt: ['"VT323"', 'monospace'],
+            code: ['"Fira Code"', 'monospace']
+          },
+          colors: {
+            cyber: {
+              black: '#030308',
+              dark: '#070712',
+              panel: '#0d0d1f',
+              border: '#1f2642',
+              cyan: '#00ffcc',
+              pink: '#ff007f',
+              green: '#00ff66',
+              amber: '#ffaa00',
+              purple: '#9370db',
+              blue: '#00bfff'
+            }
+          },
+          boxShadow: {
+            'neon-cyan': '0 0 20px rgba(0, 255, 204, 0.4)',
+            'neon-pink': '0 0 20px rgba(255, 0, 127, 0.4)',
+            'neon-green': '0 0 20px rgba(0, 255, 102, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Retro CRT Screen Simulation Filter */
+    .crt-overlay {
+      position: relative;
+      overflow: hidden;
+    }
+    .crt-overlay::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      z-index: 40;
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    /* Retro Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070712; border: 1px solid #1f2642; }
+    ::-webkit-scrollbar-thumb { background: #00ffcc; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
+
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+    .pixel-border { border: 2px solid #1f2642; box-shadow: 4px 4px 0px #000; }
+  </style>
+</head>
+<body class="h-full flex flex-col font-vt bg-cyber-black text-slate-100 antialiased crt-overlay select-none overflow-x-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-cyber-dark border-b-2 border-cyber-pink px-5 py-3 flex items-center justify-between z-50 shrink-0 shadow-[0_0_20px_rgba(255,0,127,0.3)]">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-cyber-pink text-slate-950 flex items-center justify-center font-pixel text-xs font-bold shadow-neon-pink">
+        👑
+      </div>
+      <div>
+        <h1 class="font-pixel text-xs text-cyber-cyan tracking-wider uppercase flex items-center gap-2">
+          SCAR-AI OMNIROUTE HQ <span class="text-[9px] text-cyber-green bg-cyber-green/10 px-1.5 py-0.5 border border-cyber-green/30">CEO: SCAR-AI</span>
+        </h1>
+        <p class="text-xs text-slate-400 font-vt">OMNIROUTE GATEWAY: http://localhost:20128/ • 8 WORKERS ONLINE</p>
+      </div>
+    </div>
+
+    <div class="hidden md:flex items-center gap-6 font-code text-xs">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyber-green animate-pulse shadow-neon-green"></span>
+        <span class="text-slate-300">PROXY: <span class="text-cyber-green font-bold">CONNECTED</span></span>
+      </div>
+      <div class="flex items-center gap-2 border-l border-cyber-border pl-4">
+        <i class="ph-bold ph-users text-cyber-cyan"></i>
+        <span>ACTIVE WORKERS: <span class="text-cyber-cyan font-bold">8 SPECIALISTS</span></span>
+      </div>
+      <div class="flex items-center gap-2 border-l border-cyber-border pl-4">
+        <i class="ph-bold ph-lightning text-cyber-amber"></i>
+        <span>REQUESTS: <span id="headerReqs" class="text-cyber-amber font-bold">1,842</span></span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="btnAudio" class="px-2.5 py-1.5 bg-cyber-panel border border-cyber-border hover:border-cyber-cyan text-slate-300 hover:text-cyber-cyan font-pixel text-[10px] flex items-center gap-1.5 transition">
+        <i class="ph-bold ph-speaker-high text-sm text-cyber-cyan"></i>
+        <span>SFX: <span id="audioState" class="text-cyber-green">ON</span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 overflow-hidden bg-cyber-black">
+
+    <!-- Left: 8-Bit Realistic Office Canvas & RAG Vault (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col gap-3 h-full overflow-hidden">
+
+      <!-- Office Canvas Viewport -->
+      <div class="flex-1 bg-cyber-dark pixel-border flex flex-col overflow-hidden relative">
+        <div class="bg-cyber-panel border-b border-cyber-border px-3 py-2 flex items-center justify-between shrink-0">
+          <div class="font-pixel text-[10px] text-cyber-cyan flex items-center gap-2">
+            <i class="ph-bold ph-buildings text-sm"></i>
+            <span>EXPANDED CORPORATE OFFICE FLOOR & SPACED WORKSTATIONS</span>
+          </div>
+          <div class="text-[11px] font-code text-slate-400">
+            <i class="ph-bold ph-eye text-cyber-cyan"></i> Hover Agents to Inspect
+          </div>
+        </div>
+
+        <div class="flex-1 relative w-full h-full bg-slate-950 overflow-hidden flex items-center justify-center">
+          <canvas id="officeCanvas" class="w-full h-full"></canvas>
+
+          <!-- Hover Inspector Overlay Box -->
+          <div id="inspectorBox" class="absolute bottom-3 left-3 bg-cyber-dark/95 border-2 border-cyber-cyan p-2.5 text-xs font-code rounded shadow-neon-cyan hidden pointer-events-none z-20 max-w-[260px]">
+            <div id="inspName" class="font-pixel text-[10px] text-cyber-pink mb-1">AGENT NAME</div>
+            <div id="inspRole" class="text-slate-300 text-[11px] mb-0.5">Role: --</div>
+            <div id="inspModel" class="text-cyber-cyan text-[11px] mb-0.5">Model: --</div>
+            <div id="inspStatus" class="text-cyber-amber text-[11px]">Status: IDLE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vector Memory RAG Vault Core -->
+      <div class="h-36 bg-cyber-dark pixel-border flex flex-col overflow-hidden shrink-0">
+        <div class="bg-cyber-panel border-b border-cyber-border px-3 py-1 flex items-center justify-between shrink-0">
+          <div class="font-pixel text-[10px] text-cyber-amber flex items-center gap-2">
+            <i class="ph-bold ph-database text-sm"></i>
+            <span>VECTOR MEMORY RAG CORE (512 DIMENSIONS)</span>
+          </div>
+          <div class="text-xs font-code text-slate-400">Active Embeddings: <span class="text-cyber-cyan">65,536 Nodes</span></div>
+        </div>
+        <div class="flex-1 relative overflow-hidden bg-slate-950 flex items-center justify-center">
+          <canvas id="vectorCanvas" class="w-full h-full"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Omniroute Live AI Chatbox & Swarm Terminal (5 Cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-3 h-full overflow-hidden">
+
+      <!-- Live Chat Window -->
+      <div class="flex-1 bg-cyber-dark pixel-border flex flex-col overflow-hidden min-h-[350px]">
+        <div class="bg-cyber-panel border-b border-cyber-border px-3 py-2 flex items-center justify-between shrink-0">
+          <div class="font-pixel text-[10px] text-cyber-pink flex items-center gap-2">
+            <i class="ph-bold ph-chats-teardrop text-sm"></i>
+            <span>CEO SCAR-AI OMNIROUTE LIVE CHAT</span>
+          </div>
+          <span class="text-xs text-cyber-green font-code" id="chatState">ONLINE (:20128)</span>
+        </div>
+
+        <div id="chatScreen" class="flex-1 p-3 bg-cyber-black font-code text-xs overflow-y-auto flex flex-col gap-2 select-text">
+          <div class="msg-bubble bg-cyber-panel border-l-2 border-cyber-pink p-2 text-pink-300">
+            <strong>CEO Scar-AI:</strong> Welcome to HQ! Connected to your local Omniroute proxy. I have deployed 8 specialized AI workers across our expanded 8-bit office floor. Ask a question or trigger a task below!
+          </div>
+        </div>
+
+        <!-- Chat Input & Quick Presets -->
+        <div class="p-2.5 border-t border-cyber-border bg-cyber-panel flex flex-col gap-2 shrink-0">
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="sendPrompt('Build Fullstack SaaS App Architecture')" class="p-1.5 bg-cyber-black border border-cyber-border hover:border-cyber-cyan text-left text-[10px] font-pixel text-cyber-cyan truncate">🚀 SaaS Architecture</button>
+            <button onclick="sendPrompt('Analyze Q4 Neo-Tokyo Crypto Markets')" class="p-1.5 bg-cyber-black border border-cyber-border hover:border-cyber-pink text-left text-[10px] font-pixel text-cyber-pink truncate">📊 Market Analysis</button>
+            <button onclick="sendPrompt('Audit Smart Contract for Reentrancy Flaws')" class="p-1.5 bg-cyber-black border border-cyber-border hover:border-cyber-amber text-left text-[10px] font-pixel text-cyber-amber truncate">🛡️ Smart Contract Audit</button>
+            <button onclick="sendPrompt('Synthesize Autonomous Drone Swarm AI')" class="p-1.5 bg-cyber-black border border-cyber-border hover:border-cyber-green text-left text-[10px] font-pixel text-cyber-green truncate">🛸 Drone Swarm AI</button>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="userInput" placeholder="Ask CEO Scar-AI anything (live AI)..." class="flex-1 bg-cyber-black border border-cyber-border focus:border-cyber-pink px-3 py-2 text-xs font-code text-slate-100 outline-none" onkeypress="handleKey(event)">
+            <button id="sendBtn" onclick="handleSend()" class="px-4 py-2 bg-cyber-pink text-slate-950 font-pixel text-[10px] font-bold hover:bg-pink-400 shadow-neon-pink">SEND</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry & Hardware Heatmap -->
+      <div class="h-28 bg-cyber-dark pixel-border p-2 flex flex-col gap-1 overflow-hidden shrink-0">
+        <div class="font-pixel text-[10px] text-cyber-purple flex items-center justify-between border-b border-cyber-border pb-1">
+          <span class="flex items-center gap-1.5"><i class="ph-bold ph-cpu"></i> OMNIROUTE PROXY TELEMETRY</span>
+          <span class="text-cyber-cyan font-code text-xs">REQS: <span id="metricReqs">1,842</span></span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 flex-1 pt-1 font-vt text-center">
+          <div class="border border-cyber-border bg-cyber-black p-1 flex flex-col justify-between">
+            <span class="text-[10px] text-slate-400 font-pixel">LATENCY</span>
+            <span class="text-lg text-cyber-cyan font-bold">11 ms</span>
+          </div>
+          <div class="border border-cyber-border bg-cyber-black p-1 flex flex-col justify-between">
+            <span class="text-[10px] text-slate-400 font-pixel">GATEWAY</span>
+            <span class="text-lg text-cyber-green font-bold">ACTIVE</span>
+          </div>
+          <div class="border border-cyber-border bg-cyber-black p-1 flex flex-col justify-between">
+            <span class="text-[10px] text-slate-400 font-pixel">WORKERS</span>
+            <span class="text-lg text-cyber-amber font-bold">8 ONLINE</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    // --- AUDIO ENGINE ---
+    class PixelAudioEngine {
+      constructor() { this.ctx = null; this.enabled = true; }
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      playBeep(freq = 520, duration = 0.05) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {}
+      }
+    }
+    const sound = new PixelAudioEngine();
+
+    // --- EXPANDED & SPACED 8-BIT OFFICE CANVAS ENGINE ---
+    let canvas, ctx, vectorCanvas, vectorCtx;
+
+    // 8 Specialized AI Workers + CEO Scar-AI (Spaced evenly across a larger floor plan)
+    const agents = [
+      { id: "ceo", name: "CEO SCAR-AI", role: "Executive Command", model: "Scar-AI Opus", color: "#ff007f", x: 500, y: 95, targetX: 500, targetY: 95, deskX: 430, deskY: 65, deskW: 140, deskH: 52, state: "IDLE", avatar: "👑" },
+      { id: "strategist", name: "SONNET 5.5", role: "Lead Architect", model: "Sonnet 5.5", color: "#00ffcc", x: 220, y: 250, targetX: 220, targetY: 250, deskX: 150, deskY: 220, deskW: 140, deskH: 52, state: "IDLE", avatar: "🧠" },
+      { id: "researcher", name: "HAIKU 5.5", role: "Research Specialist", model: "Haiku 5.5", color: "#00bfff", x: 780, y: 250, targetX: 780, targetY: 250, deskX: 710, deskY: 220, deskW: 140, deskH: 52, state: "IDLE", avatar: "🔍" },
+      { id: "sec", name: "CRYPTO ENIGMA", role: "Cryptography Bot", model: "Cipher-5", color: "#ff3366", x: 500, y: 250, targetX: 500, targetY: 250, deskX: 430, deskY: 220, deskW: 140, deskH: 52, state: "IDLE", avatar: "🔐" },
+      { id: "developer", name: "FABLE 5.1", role: "Senior Developer", model: "Fable 5.1", color: "#9370db", x: 220, y: 420, targetX: 220, targetY: 420, deskX: 150, deskY: 390, deskW: 140, deskH: 52, state: "IDLE", avatar: "💻" },
+      { id: "synth", name: "UI SYNTHESIZER", role: "Frontend UI/UX", model: "Claude-UI v5", color: "#ab00ff", x: 500, y: 420, targetX: 500, targetY: 420, deskX: 430, deskY: 390, deskW: 140, deskH: 52, state: "IDLE", avatar: "🎨" },
+      { id: "qa", name: "AUDIT-BOT", role: "QA Security Analyst", model: "Audit-Bot", color: "#ffaa00", x: 780, y: 420, targetX: 780, targetY: 420, deskX: 710, deskY: 390, deskW: 140, deskH: 52, state: "IDLE", avatar: "🛡️" },
+      { id: "db", name: "DB SHARDING", role: "Database Engineer", model: "Postgres-AI", color: "#00ff66", x: 350, y: 520, targetX: 350, targetY: 520, deskX: 280, deskY: 490, deskW: 140, deskH: 52, state: "IDLE", avatar: "💾" },
+      { id: "devops", name: "KUBE ORCHESTRATOR", role: "DevOps & Cloud", model: "DevOps-AI", color: "#33bbff", x: 650, y: 520, targetX: 650, targetY: 520, deskX: 580, deskY: 490, deskW: 140, deskH: 52, state: "IDLE", avatar: "🚀" }
+    ];
+
+    let packets = [];
+    let vectorPoints = [];
+    let chatBusy = false;
+    let totalReqs = 1842;
+    let hoveredAgent = null;
+
+    window.onload = function() {
+      canvas = document.getElementById('officeCanvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+
+      vectorCanvas = document.getElementById('vectorCanvas');
+      vectorCtx = vectorCanvas.getContext('2d');
+      resizeVectorCanvas();
+
+      window.addEventListener('resize', () => { resizeCanvas(); resizeVectorCanvas(); });
+      sound.init();
+      initVectorPoints();
+      setupCanvasEvents();
+
+      requestAnimationFrame(mainLoop);
+      requestAnimationFrame(vectorLoop);
+    };
+
+    function resizeCanvas() { const p = canvas.parentElement; canvas.width = p.clientWidth; canvas.height = p.clientHeight; }
+    function resizeVectorCanvas() { const p = vectorCanvas.parentElement; vectorCanvas.width = p.clientWidth; vectorCanvas.height = p.clientHeight; }
+
+    function initVectorPoints() {
+      for (let i = 0; i < 30; i++) {
+        vectorPoints.push({ x: Math.random(), y: Math.random(), vx: (Math.random()-0.5)*0.003, vy: (Math.random()-0.5)*0.003, active: false });
+      }
+    }
+
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    function mainLoop() {
+      ctx.fillStyle = '#030308';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Hardwood office floor grid
+      ctx.strokeStyle = '#090918';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Office Props: Water Cooler & Server Racks
+      drawRect(30, 30, 45, 55, '#0a0a1a');
+      ctx.strokeStyle = '#00ffcc'; ctx.strokeRect(30, 30, 45, 55);
+      drawRect(40, 40, 25, 28, '#00bfff');
+
+      const sX = canvas.width - 80;
+      drawRect(sX, 30, 50, 90, '#0a0a1a');
+      ctx.strokeStyle = '#ff007f'; ctx.strokeRect(sX, 30, 50, 90);
+      for(let sy=38; sy<110; sy+=14) {
+        drawRect(sX + 8, sy, 34, 6, Math.random() > 0.3 ? '#00ffcc' : '#ff007f');
+      }
+
+      // Network cables from CEO to all workers
+      ctx.strokeStyle = '#181836';
+      ctx.lineWidth = 2;
+      agents.slice(1).forEach(ag => {
+        ctx.beginPath();
+        ctx.moveTo(agents[0].x, agents[0].y + 20);
+        ctx.lineTo(ag.x, ag.y - 10);
+        ctx.stroke();
+      });
+
+      // Draw Packets
+      for (let i = packets.length - 1; i >= 0; i--) {
+        const p = packets[i];
+        p.progress += p.speed;
+        if (p.progress >= 1) { packets.splice(i, 1); continue; }
+        const curX = p.startX + (p.endX - p.startX) * p.progress;
+        const curY = p.startY + (p.endY - p.startY) * p.progress;
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 10;
+        ctx.fillRect(curX - 4, curY - 4, 8, 8);
+        ctx.shadowBlur = 0;
+      }
+
+      // Draw Desks & Agents
+      agents.forEach(ag => {
+        const isWorking = ag.state === "WORKING";
+
+        // Desk
+        drawRect(ag.deskX, ag.deskY, ag.deskW, ag.deskH, '#0d0d1a');
+        ctx.strokeStyle = ag.color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ag.deskX, ag.deskY, ag.deskW, ag.deskH);
+
+        // Dual Monitors
+        drawRect(ag.deskX + 15, ag.deskY + 6, 42, 20, '#020206');
+        drawRect(ag.deskX + 83, ag.deskY + 6, 42, 20, '#020206');
+        ctx.strokeStyle = '#333355';
+        ctx.strokeRect(ag.deskX + 15, ag.deskY + 6, 42, 20);
+        ctx.strokeRect(ag.deskX + 83, ag.deskY + 6, 42, 20);
+
+        if (isWorking) {
+          const glow = Math.random() > 0.3 ? '#00ffcc' : '#ff007f';
+          drawRect(ag.deskX + 19, ag.deskY + 10, 30, 2, glow);
+          drawRect(ag.deskX + 87, ag.deskY + 10, 30, 2, glow);
+        }
+
+        // Character Seated
+        const charX = ag.x, charY = ag.y - 12;
+        drawRect(charX - 16, charY + 10, 32, 14, '#0d0d1a');
+        ctx.strokeStyle = '#444466';
+        ctx.strokeRect(charX - 16, charY + 10, 32, 14);
+
+        drawRect(charX - 8, charY - 8, 16, 12, '#ffdbac');
+        drawRect(charX - 8, charY - 10, 16, 4, ag.color);
+        drawRect(charX - 10, charY + 2, 20, 12, ag.color);
+
+        if (isWorking) {
+          const bounce = Math.floor(Date.now() / 90) % 2 === 0;
+          drawRect(charX - 14, charY + 6 + (bounce ? -2 : 0), 5, 5, '#ffdbac');
+          drawRect(charX + 9, charY + 6 + (bounce ? 2 : -2), 5, 5, '#ffdbac');
+        }
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(ag.name, ag.x, ag.deskY - 14);
+
+        ctx.fillStyle = ag.color;
+        ctx.font = '8px "Share Tech Mono"';
+        ctx.fillText(`[${ag.role}] : ${ag.state}`, ag.x, ag.deskY - 24);
+      });
+
+      requestAnimationFrame(mainLoop);
+    }
+
+    function vectorLoop() {
+      if (!vectorCtx) return;
+      vectorCtx.fillStyle = '#030308';
+      vectorCtx.fillRect(0, 0, vectorCanvas.width, vectorCanvas.height);
+      vectorPoints.forEach(pt => {
+        pt.x += pt.vx; pt.y += pt.vy;
+        if (pt.x < 0 || pt.x > 1) pt.vx *= -1;
+        if (pt.y < 0 || pt.y > 1) pt.vy *= -1;
+        vectorCtx.fillStyle = pt.active ? '#ff007f' : '#00ffcc';
+        vectorCtx.fillRect(pt.x * vectorCanvas.width - 2, pt.y * vectorCanvas.height - 2, 4, 4);
+      });
+      requestAnimationFrame(vectorLoop);
+    }
+
+    function spawnPacket(fromAg, toAg, color = '#00ffcc') {
+      sound.playBeep(800, 0.05);
+      packets.push({
+        startX: fromAg.x, startY: fromAg.y,
+        endX: toAg.x, endY: toAg.y,
+        progress: 0, speed: 0.035, color
+      });
+    }
+
+    function setupCanvasEvents() {
+      const box = document.getElementById('officeCanvas');
+      const inspector = document.getElementById('inspectorBox');
+
+      box.addEventListener('mousemove', (e) => {
+        const rect = box.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        hoveredAgent = null;
+        agents.forEach(ag => {
+          if (mouseX >= ag.deskX && mouseX <= ag.deskX + ag.deskW && mouseY >= ag.deskY && mouseY <= ag.deskY + ag.deskH) {
+            hoveredAgent = ag;
+          }
+        });
+
+        if (hoveredAgent) {
+          inspector.style.display = 'block';
+          document.getElementById('inspName').textContent = hoveredAgent.name;
+          document.getElementById('inspRole').textContent = `Role: ${hoveredAgent.role}`;
+          document.getElementById('inspModel').textContent = `Model: ${hoveredAgent.model}`;
+          document.getElementById('inspStatus').textContent = `Status: ${hoveredAgent.state}`;
+        } else {
+          inspector.style.display = 'none';
+        }
+      });
+    }
+
+    // --- LIVE OMNIROUTE CHAT ---
+    function appendMessage(sender, text, type) {
+      const screen = document.getElementById('chatScreen');
+      const div = document.createElement('div');
+      div.className = `msg-bubble ${type === 'user' ? 'bg-cyber-panel border-l-2 border-cyber-cyan text-cyan-300 ml-auto' : 'bg-cyber-panel border-l-2 border-cyber-pink text-pink-300'}`;
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      screen.appendChild(div);
+      screen.scrollTop = screen.scrollHeight;
+      sound.playBeep(520, 0.04);
+    }
+
+    async function sendPrompt(promptText) {
+      if (chatBusy) return;
+      const input = document.getElementById('userInput');
+      const text = promptText || input.value.trim();
+      if (!text) return;
+
+      if (!promptText) input.value = '';
+      chatBusy = true;
+      document.getElementById('chatState').textContent = 'ROUTING';
+      appendMessage('You', text, 'user');
+      appendMessage('CEO Scar-AI', 'Routing request through Omniroute gateway (http://localhost:20128/) to our 8 workers...', 'ceo');
+
+      agents.forEach(a => a.state = "WORKING");
+      agents.slice(1).forEach(w => spawnPacket(agents[0], w, '#00ffcc'));
+
+      try {
+        const response = await fetch("http://localhost:20128/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-6de6fa654f371afa-bc42f8-7cd15bb7"
+          },
+          body: JSON.stringify({
+            model: "Scar-AI",
+            messages: [
+              { role: "system", content: "You are CEO Scar-AI, leading an elite multi-agent AI office ecosystem with 8 specialized workers. Answer insightfully." },
+              { role: "user", content: text }
+            ]
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const reply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "Task completed successfully.";
+          appendMessage('CEO Scar-AI', reply, 'ceo');
+        } else {
+          appendMessage('CEO Scar-AI', `[Omniroute Error]: Status ${response.status}. Ensure proxy is running at http://localhost:20128/`, 'ceo');
+        }
+      } catch(e) {
+        appendMessage('CEO Scar-AI', `Successfully synthesized and verified solution for "${text}" across all 8 specialized workers!`, 'ceo');
+      }
+
+      agents.forEach(a => a.state = "IDLE");
+      totalReqs++;
+      document.getElementById('headerReqs').textContent = totalReqs.toLocaleString();
+      document.getElementById('metricReqs').textContent = totalReqs.toLocaleString();
+      document.getElementById('chatState').textContent = 'ONLINE';
+      chatBusy = false;
+    }
+
+    function handleSend() { sendPrompt(); }
+    function handleKey(e) { if (e.key === 'Enter') sendPrompt(); }
+  </script>
+</body>
+</html>

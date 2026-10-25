@@ -1,0 +1,12 @@
+{
+  "name": "scarai-office-ecosystem",
+  "version": "1.0.0",
+  "description": "Autonomous Enterprise AI Ecosystem & Omniroute HQ",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": ["ai", "cyberpunk", "pixel", "ecosystem", "omniroute", "vercel"],
+  "author": "ScarAI",
+  "license": "ISC"
+}
